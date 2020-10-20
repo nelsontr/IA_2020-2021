@@ -28,17 +28,45 @@ class RRState:
 class Board:
     """ Representacao interna de um tabuleiro de Ricochet Robots. """
 
+    def __init__(self, dim: int, blocks: int, robots: dict):
+        self.dimensions = N
+        self.robots={}
+
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
         # TODO
-        pass
+        # pass
+        return self.robots[robot]
 
+    def robot_addPosition(self, robot: str, position: tuple):
+        self.robots[robot] = position
     # TODO: outros metodos da classe
 
 
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
     uma instância da classe Board. """
+    with open(filename, "r") as file1:
+        dim = int(file1.readline()[:-1])
+        robots = {}
+
+        for i in range(0,4):
+            aux = file1.readline()[:-1].split(" ")
+            robots[aux[0]]= (int(aux[1]),int(aux[2]))
+        #obj = (...) TODO
+        blocks = int(file1.readline()[:-1])
+        block_pos = {}
+        for i in range(0,blocks):
+
+
+        # N -> grelha NxN
+        # Posição Robots
+        # Números Barreiras
+        # Onde?
+        
+    
+    return Board(dim, blocks, robots, blocks_pos)
+    
     # TODO
     pass
 
@@ -77,6 +105,8 @@ class RicochetRobots(Problem):
 
 
 if __name__ == "__main__":
+    board = parse_instance(sys.arg[1])
+
     # TODO:
     # Ler o ficheiro de input de sys.argv[1],
     # Usar uma técnica de procura para resolver a instância,
