@@ -74,7 +74,7 @@ class Board:
                 robots[action[0]][0] += 1
 
     def check_if_objective(self, board):
-        return cmp(board, objective)
+        return board == objective
     # TODO: outros metodos da classe
 
 
