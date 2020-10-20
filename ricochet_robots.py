@@ -2,9 +2,9 @@
 # Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
 # Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
 
-# Grupo 00:
-# 00000 Nome1
-# 00000 Nome2
+# Grupo 05:
+# 93695 Catarina Sousa
+# 93743 Nelson Trindade
 
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search
@@ -20,7 +20,7 @@ class RRState:
         RRState.state_id += 1
 
     def __lt__(self, other):
-    	""" Este método é utilizado em caso de empate na gestão da lista
+        """ Este método é utilizado em caso de empate na gestão da lista
         de abertos nas procuras informadas. """
         return self.id < other.id
 
@@ -28,18 +28,53 @@ class RRState:
 class Board:
     """ Representacao interna de um tabuleiro de Ricochet Robots. """
 
-    def __init__(self, dim: int, blocks: int, robots: dict):
-        self.dimensions = N
-        self.robots={}
+    def __init__(self, dim: int, robots: dict, barriers_pos: dict, objective: list):
+        self.robots = robots
+        self.dimensions = dim
+        self.barriers_pos = barriers_pos
+        self.objective = objective
 
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
-        # TODO
-        # pass
         return self.robots[robot]
 
-    def robot_addPosition(self, robot: str, position: tuple):
-        self.robots[robot] = position
+    def check_boundaries(self) -> list:
+        result = []
+        robot = ["R", "B", "G", "Y"]
+        for x in robot:
+            if (x[0]+1 <= dimensions):
+                if (str((x, "d")) not in barriers_pos):
+                    results += [(x, "d")]
+            if (x[0]-1 >= 1):
+                if (str((x, "u")) not in barriers_pos):
+                    results += [(x, "u")]
+            if (x[1]+1 <= dimensions):
+                if (str((x, "r")) not in barriers_pos):
+                    results += [(x, "r")]
+            if (x[1]-1 >= 1):
+                if (str((x, "l")) not in barriers_pos):
+                    results += [(x, "l")]
+        return result
+
+    def check_bounder(self, action: tuple) -> bool:
+        actions = check_boundaries()
+        if action in actions:
+            return true
+        return false
+
+    def move(self, action: tuple):
+        while(check_bounder(action)):
+            if action[1] == 'l':
+                robots[action[0]][1] -= 1
+            if action[1] == 'r':
+                robots[action[0]][1] += 1
+            if action[1] == 'u':
+                robots[action[0]][0] -= 1
+            if action[1] == 'd':
+                robots[action[0]][0] += 1
+
+    def check_if_objective(self, board):
+        return cmp(board, objective)
     # TODO: outros metodos da classe
 
 
@@ -50,51 +85,44 @@ def parse_instance(filename: str) -> Board:
         dim = int(file1.readline()[:-1])
         robots = {}
 
-        for i in range(0,4):
+        for i in range(0, 4):
             aux = file1.readline()[:-1].split(" ")
-            robots[aux[0]]= (int(aux[1]),int(aux[2]))
-        #obj = (...) TODO
-        blocks = int(file1.readline()[:-1])
-        block_pos = {}
-        for i in range(0,blocks):
+            robots[aux[0]] = [int(aux[1]), int(aux[2])]
 
+        obj = file1.readline()[:-1].split(" ")
+        obj[1], obj[2] = int(obj[1]), int(obj[2])
 
-        # N -> grelha NxN
-        # Posição Robots
-        # Números Barreiras
-        # Onde?
-        
-    
-    return Board(dim, blocks, robots, blocks_pos)
-    
-    # TODO
-    pass
+        barriers = int(file1.readline()[:-1])
+        barriers_pos = {}
+        for i in range(0, barriers):
+            aux = file1.readline()[:-1].split(" ")
+            barriers_pos[str([aux[0], aux[1]])] = aux[2]
+    return Board(dim, robots, barriers_pos, obj)
 
 
 class RicochetRobots(Problem):
     def __init__(self, board: Board):
         """ O construtor especifica o estado inicial. """
-        # TODO: self.initial = ...
-        pass
+        self.initial = board
 
-    def actions(self, state: RRState):
-        """ Retorna uma lista de ações que podem ser executadas a
-        partir do estado passado como argumento. """
-        # TODO
-        pass
+    def actions(self, state: RRState) -> list:
+        return state.board.check_boundaries()
 
     def result(self, state: RRState, action):
         """ Retorna o estado resultante de executar a 'action' sobre
         'state' passado como argumento. A ação retornada deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state). """
-        # TODO
-        pass
+        if action in actions(state):
+            state.board.move(action)
+
+        return state
 
     def goal_test(self, state: RRState):
         """ Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se o alvo e o robô da
         mesma cor ocupam a mesma célula no tabuleiro. """
+        return state.board.check_if_objective(state.board)
         # TODO
         pass
 
@@ -105,10 +133,14 @@ class RicochetRobots(Problem):
 
 
 if __name__ == "__main__":
-    board = parse_instance(sys.arg[1])
-
+    board = parse_instance(sys.argv[1])
+    print(board.robot_position('Y'))
+    print(board.robot_position('G'))
+    print(board.robot_position('B'))
+    print(board.robot_position('R'))
+    print(board.objective)
+    print({"Nelson": "def"} == {"Nelson": "def"})
     # TODO:
-    # Ler o ficheiro de input de sys.argv[1],
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
