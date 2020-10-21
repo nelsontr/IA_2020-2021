@@ -124,6 +124,7 @@ class RicochetRobots(Problem):
 
 		return state
 
+<<<<<<< Updated upstream
 	def goal_test(self, state: RRState):
 		""" Retorna True se e só se o estado passado como argumento é
 		um estado objetivo. Deve verificar se o alvo e o robô da
@@ -136,6 +137,19 @@ class RicochetRobots(Problem):
 		""" Função heuristica utilizada para a procura A*. """
 		# TODO
 		pass
+=======
+    def goal_test(self, state: RRState):
+        """ Retorna True se e só se o estado passado como argumento é
+        um estado objetivo. Deve verificar se o alvo e o robô da
+        mesma cor ocupam a mesma célula no tabuleiro. """
+        return state.board.check_if_objective(state.board)
+
+    def h(self, node: Node):
+        """ Função heuristica utilizada para a procura A*. """
+        dx = abs(node.x - self.iniScial.objective[0])
+        dy = abs(node.y - self.inicial.objective[1])
+        return (dx + dy)
+>>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
