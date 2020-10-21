@@ -40,20 +40,21 @@ class Board:
 
     def check_boundaries(self) -> list:
         result = []
-        robot = ["R", "B", "G", "Y"]
-        for x in robot:
-            if (x[0]+1 <= dimensions):
-                if (str((x, "d")) not in barriers_pos):
-                    results += [(x, "d")]
-            if (x[0]-1 >= 1):
-                if (str((x, "u")) not in barriers_pos):
-                    results += [(x, "u")]
-            if (x[1]+1 <= dimensions):
-                if (str((x, "r")) not in barriers_pos):
-                    results += [(x, "r")]
-            if (x[1]-1 >= 1):
-                if (str((x, "l")) not in barriers_pos):
-                    results += [(x, "l")]
+        print(self.barriers_pos)
+        for x in self.robots:
+            if (int(self.robots[x][0])+1 <= self.dimensions):
+                if (str((self.robots[x])) not in self.barriers_pos and "d" in self.barriers_pos[str((self.robots[x]))]):
+                    result += [(x, "d")]
+            if (int(self.robots[x][0])-1 >= 1):
+                print(str((self.robots[x])))
+                if (str((self.robots[x])) not in self.barriers_pos):
+                    result += [(x, "u")]
+            if (int(self.robots[x][1])+1 <= self.dimensions):
+                if (str(self.robots[x]) not in self.barriers_pos):
+                    result += [(x, "r")]
+            if (int(self.robots[x][1])-1 >= 1):
+                if (str((self.robots[x])) not in self.barriers_pos):
+                    result += [(x, "l")]
         return result
 
     def check_bounder(self, action: tuple) -> bool:
@@ -96,7 +97,9 @@ def parse_instance(filename: str) -> Board:
         barriers_pos = {}
         for i in range(0, barriers):
             aux = file1.readline()[:-1].split(" ")
-            barriers_pos[str([aux[0], aux[1]])] = aux[2]
+            if str([int(aux[0]), int(aux[1])]) in barriers_pos:
+                barriers_pos[str([int(aux[0]), int(aux[1])])].append([aux[2]])
+            else: barriers_pos[str([int(aux[0]), int(aux[1])])] = [aux[2]]
     return Board(dim, robots, barriers_pos, obj)
 
 
@@ -134,12 +137,7 @@ class RicochetRobots(Problem):
 
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
-    print(board.robot_position('Y'))
-    print(board.robot_position('G'))
-    print(board.robot_position('B'))
-    print(board.robot_position('R'))
-    print(board.objective)
-    print({"Nelson": "def"} == {"Nelson": "def"})
+    print(board.check_boundaries())
     # TODO:
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
