@@ -40,39 +40,48 @@ class Board:
 
     def check_boundaries(self) -> list:
         result = []
-        print(self.barriers_pos)
-        for x in self.robots:
-            if (int(self.robots[x][0])+1 <= self.dimensions):
-                if (str((self.robots[x])) not in self.barriers_pos and "d" in self.barriers_pos[str((self.robots[x]))]):
-                    result += [(x, "d")]
-            if (int(self.robots[x][0])-1 >= 1):
-                print(str((self.robots[x])))
-                if (str((self.robots[x])) not in self.barriers_pos):
-                    result += [(x, "u")]
-            if (int(self.robots[x][1])+1 <= self.dimensions):
-                if (str(self.robots[x]) not in self.barriers_pos):
-                    result += [(x, "r")]
-            if (int(self.robots[x][1])-1 >= 1):
-                if (str((self.robots[x])) not in self.barriers_pos):
-                    result += [(x, "l")]
+        #print(self.barriers_pos)
+        #print(self.robots)
+
+        for color in self.robots:
+            x,y = self.robots[color]
+            #board walls and robots
+            u = (x-1) >=1 and [(x-1),y] not in self.robots.values()
+            d = (x+1) <= self.dimensions and [(x+1),y] not in self.robots.values()
+            l = (y-1) >=1 and [x,(y-1)] not in self.robots.values()
+            r = (y+1) <= self.dimensions and [x,(y+1)] not in self.robots.values()
+            #barriers
+            u = u and ((str([(x-1),y]) not in self.barriers_pos.keys() or "d" not in self.barriers_pos[str([(x-1),y])])
+                and (str([x,y]) not in self.barriers_pos.keys() or "u" not in self.barriers_pos[str([x,y])]) )
+            d = d and ((str([(x+1),y]) not in self.barriers_pos.keys() or "u" not in self.barriers_pos[str([(x+1),y])])
+                and (str([x,y]) not in self.barriers_pos.keys() or "d" not in self.barriers_pos[str([x,y])]) )
+            l = l and ((str([x,(y-1)]) not in self.barriers_pos.keys() or "r" not in self.barriers_pos[str([x,(y-1)])])
+                and (str([x,y]) not in self.barriers_pos.keys() or "l" not in self.barriers_pos[str([x,y])]) )
+            r = r and ((str([x,(y+1)]) not in self.barriers_pos.keys() or "l" not in self.barriers_pos[str([x,(y+1)])])
+                and (str([x,y]) not in self.barriers_pos.keys() or "r" not in self.barriers_pos[str([x,y])]) )
+            if u: result.append((color, "u"))
+            if d: result.append((color, "d"))
+            if l: result.append((color, "l"))
+            if r: result.append((color, "r"))
+            
         return result
 
-    def check_bounder(self, action: tuple) -> bool:
-        actions = check_boundaries()
-        if action in actions:
-            return true
-        return false
-
     def move(self, action: tuple):
-        while(check_bounder(action)):
+        while(self.check_bounder(action)):
             if action[1] == 'l':
-                robots[action[0]][1] -= 1
+                self.robots[action[0]][1] -= 1
             if action[1] == 'r':
-                robots[action[0]][1] += 1
+                self.robots[action[0]][1] += 1
             if action[1] == 'u':
-                robots[action[0]][0] -= 1
+                self.robots[action[0]][0] -= 1
             if action[1] == 'd':
-                robots[action[0]][0] += 1
+                self.robots[action[0]][0] += 1
+
+    def check_bounder(self, action: tuple) -> bool:
+        actions = self.check_boundaries()
+        if action in actions:
+            return True
+        return False
 
     def check_if_objective(self, board):
         return board == objective
@@ -98,7 +107,7 @@ def parse_instance(filename: str) -> Board:
         for i in range(0, barriers):
             aux = file1.readline()[:-1].split(" ")
             if str([int(aux[0]), int(aux[1])]) in barriers_pos:
-                barriers_pos[str([int(aux[0]), int(aux[1])])].append([aux[2]])
+                barriers_pos[str([int(aux[0]), int(aux[1])])].append(aux[2])
             else: barriers_pos[str([int(aux[0]), int(aux[1])])] = [aux[2]]
     return Board(dim, robots, barriers_pos, obj)
 
@@ -137,7 +146,10 @@ class RicochetRobots(Problem):
 
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
-    print(board.check_boundaries())
+    print("Board 0:",board.check_boundaries())
+    board.move(("B", "l"))
+    print("Board 1:",board.check_boundaries())
+    
     # TODO:
     # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
