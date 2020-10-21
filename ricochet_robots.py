@@ -146,11 +146,11 @@ class RicochetRobots(Problem):
 
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
+    problem = RicochetRobots(board)
+    solution = asta_search(problem)
     
 
-
     # TODO:
-    # Usar uma técnica de procura para resolver a instância,
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
     pass
