@@ -152,8 +152,7 @@ if __name__ == "__main__":
     solution = astar_search(problem)
     print(len(solution.solution()))
     for i in solution:
-        print(i[0])
-        print(i[1])
+        print(i[0], " ", i[1])
     # TODO:
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
