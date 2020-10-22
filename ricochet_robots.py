@@ -139,10 +139,10 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        color = node.state.board.objective[0]
-        robot = node.state.board.robot_position(color)
-        dx = abs(robot[0] - goal[0])  #TODO
-        dy = abs(robot[1] - goal[1])
+        objective = node.state.board.objective
+        robot = node.state.board.robot_position(objective[0])
+        dx = abs(robot[0] - objective[1])  #TODO
+        dy = abs(robot[1] - objective[2])
         return (dx + dy)
 
 
