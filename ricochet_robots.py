@@ -101,7 +101,7 @@ def parse_instance(filename: str) -> Board:
             robots[aux[0]] = [int(aux[1]), int(aux[2])]
 
         obj = file1.readline()[:-1].split(" ")
-        obj[0], obj[1], obj[2] = str(obj[0]), int(obj[1]), int(obj[2])
+        obj[1], obj[2] = int(obj[1]), int(obj[2])
 
         barriers = int(file1.readline()[:-1])
         barriers_pos = {}
