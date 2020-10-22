@@ -101,7 +101,7 @@ def parse_instance(filename: str) -> Board:
             robots[aux[0]] = [int(aux[1]), int(aux[2])]
 
         obj = file1.readline()[:-1].split(" ")
-        obj[1], obj[2] = int(obj[1]), int(obj[2])
+        obj[0], obj[1], obj[2] = str(obj[0]), int(obj[1]), int(obj[2])
 
         barriers = int(file1.readline()[:-1])
         barriers_pos = {}
@@ -139,17 +139,21 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        dx = abs(node.x - goal[0])  #TODO
-        dy = abs(node.y - goal[1])
+        color = node.state.board.objective[0]
+        robot = node.state.board.robot_position(color)
+        dx = abs(robot[0] - goal[0])  #TODO
+        dy = abs(robot[1] - goal[1])
         return (dx + dy)
 
 
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-    solution = asta_search(problem)
-    
-
+    solution = astar_search(problem)
+    print(len(solution.solution()))
+    for i in solution:
+        print(i[0])
+        print(i[1])
     # TODO:
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
