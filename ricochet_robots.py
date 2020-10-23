@@ -9,8 +9,7 @@
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search
 import sys
-
-
+from copy import deepcopy
 class RRState:
     state_id = 0
 
@@ -33,6 +32,9 @@ class Board:
         self.dimensions = dim
         self.barriers_pos = barriers_pos
         self.objective = objective
+
+    def __repr__(self):
+        return str({"Robots":self.robots})
 
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
@@ -80,12 +82,15 @@ class Board:
                 self.robots[action[0]][0] -= 1
             if action[1] == 'd':
                 self.robots[action[0]][0] += 1
+        
 
     def check_bounder(self, action: tuple) -> bool:
         return action in self.check_boundaries()
 
     def check_if_objective(self, board):
-        return board == objective
+        return self.objective[1] == board.robots[self.objective[0]][0] \
+            and self.objective[2] == board.robots[self.objective[0]][1]
+    
     # TODO: outros metodos da classe
 
 
@@ -117,7 +122,7 @@ def parse_instance(filename: str) -> Board:
 class RicochetRobots(Problem):
     def __init__(self, board: Board):
         """ O construtor especifica o estado inicial. """
-        self.initial = board
+        self.initial = RRState(board)
 
     def actions(self, state: RRState) -> list:
         return state.board.check_boundaries()
@@ -127,10 +132,17 @@ class RicochetRobots(Problem):
         'state' passado como argumento. A ação retornada deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state). """
+       
         if action in self.actions(state):
-            return state.board.move(action)
+            board2 = Board(state.board.dimensions, deepcopy(state.board.robots), state.board.barriers_pos, state.board.objective)
+            state2 = RRState(board2)
+            #print("Antes ", state.board)
+            #print("Antes ", state2.board)
+            state2.board.move(action)
+            #print("Depois ", state.board)
+            #print("Depois ", state2.board)
+            return state2
         return state
-
     def goal_test(self, state: RRState):
         """ Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se o alvo e o robô da
@@ -149,10 +161,11 @@ class RicochetRobots(Problem):
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
+    
     solution = astar_search(problem)
     print(len(solution.solution()))
-    for i in solution:
-        print(i[0]," ",i[1])
+    for i in solution.solution():
+        print(i[0], i[1])
     # TODO:
     # Retirar a solução a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
