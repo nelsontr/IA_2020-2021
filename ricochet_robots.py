@@ -7,7 +7,7 @@
 # 93743 Nelson Trindade
 
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
-    depth_first_tree_search, greedy_search
+    depth_first_tree_search, greedy_search, iterative_deepening_search
 import sys
 from copy import deepcopy
 class RRState:
@@ -162,11 +162,10 @@ if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
     
-    solution = astar_search(problem)
+    #solution = astar_search(problem)
+    solution = iterative_deepening_search(problem)
+    
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
-    # TODO:
-    # Retirar a solução a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
-    pass
+
