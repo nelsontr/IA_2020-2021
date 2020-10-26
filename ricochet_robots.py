@@ -10,7 +10,8 @@ from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search, iterative_deepening_search
 import sys
 from copy import deepcopy
-import time
+#import time
+
 class RRState:
     state_id = 0
 
@@ -42,17 +43,21 @@ class Board:
         return (str([x, y]) not in self.barriers_pos.keys() or
                 posi not in self.barriers_pos[str([x, y])])
 
-    def checkBounderiesRobot(self, robot: str, term: str):
+    def checkBounderiesRobot(self, robot: str, term: str)-> bool:
         x, y = self.robots[robot]  # position of robot
 
         if term=="u":
-            return x!=1 and ([x-1,y] not in self.robots.values()) and self.check_barriers(x-1,y,"d") and self.check_barriers(x,y,"u")
+            return x!=1 and ([x-1,y] not in self.robots.values()) and \
+            self.check_barriers(x-1,y,"d") and self.check_barriers(x,y,"u")
         elif term=="d":
-            return x!=self.dimensions and ([x+1,y] not in self.robots.values()) and self.check_barriers(x+1,y,"u") and self.check_barriers(x,y,"d")
+            return x!=self.dimensions and ([x+1,y] not in self.robots.values())\
+            and self.check_barriers(x+1,y,"u") and self.check_barriers(x,y,"d")
         elif term=="l":
-            return y!=1 and ([x,y-1] not in self.robots.values()) and self.check_barriers(x,y-1,"r") and self.check_barriers(x,y,"l")
+            return y!=1 and ([x,y-1] not in self.robots.values()) and \
+            self.check_barriers(x,y-1,"r") and self.check_barriers(x,y,"l")
         elif term=="r":
-            return y!=self.dimensions and ([x,y+1] not in self.robots.values()) and self.check_barriers(x,y+1,"l") and self.check_barriers(x,y,"r")
+            return y!=self.dimensions and ([x,y+1] not in self.robots.values())\
+            and self.check_barriers(x,y+1,"l") and self.check_barriers(x,y,"r")
 
 
 
@@ -80,13 +85,10 @@ class Board:
             elif action[1] == 'd':
                 self.robots[action[0]][0] += 1
 
-
-
     def check_if_objective(self, board):
         return self.objective[1] == board.robots[self.objective[0]][0] \
             and self.objective[2] == board.robots[self.objective[0]][1]
 
-    # TODO: outros metodos da classe
 
 
 def parse_instance(filename: str) -> Board:
@@ -107,10 +109,10 @@ def parse_instance(filename: str) -> Board:
         barriers_pos = {}
         for i in range(0, barriers):
             aux = file1.readline()[:-1].split(" ")
-            if str([int(aux[0]), int(aux[1])]) in barriers_pos:
-                barriers_pos[str([int(aux[0]), int(aux[1])])].append(aux[2])
-            else:
-                barriers_pos[str([int(aux[0]), int(aux[1])])] = [aux[2]]
+            if str([int(aux[0]), int(aux[1])]) not in barriers_pos:
+                barriers_pos[str([int(aux[0]), int(aux[1])])] = []
+            barriers_pos[str([int(aux[0]), int(aux[1])])].append(aux[2])
+
     return Board(dim, robots, barriers_pos, obj)
 
 
@@ -152,7 +154,7 @@ class RicochetRobots(Problem):
 
 if __name__ == "__main__":
 
-    start_time = time.time()
+    #start_time = time.time()
 
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
@@ -163,4 +165,4 @@ if __name__ == "__main__":
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
-    print("--- %s seconds ---" % (time.time() - start_time))
+    #print("--- %s seconds ---" % (time.time() - start_time))
