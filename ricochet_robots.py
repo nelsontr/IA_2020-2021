@@ -37,7 +37,7 @@ class Board:
 
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
-        return self.robots[robot]
+        return tuple(self.robots[robot])
 
     def check_barriers(self, x: int, y: int, posi: str) -> bool:
         return (str([x, y]) not in self.barriers_pos.keys() or
@@ -158,7 +158,6 @@ if __name__ == "__main__":
 
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-
     #solution = astar_search(problem)
     solution = iterative_deepening_search(problem)
 
