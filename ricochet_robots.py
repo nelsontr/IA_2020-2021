@@ -10,6 +10,7 @@ from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search, iterative_deepening_search
 import sys
 from copy import deepcopy
+import time
 class RRState:
     state_id = 0
 
@@ -44,34 +45,37 @@ class Board:
         return (str([x, y]) not in self.barriers_pos.keys() or
                 posi not in self.barriers_pos[str([x, y])])
 
+    def checkBounderiesRobot(self, robot: str, term: str):
+        x, y = self.robots[robot]  # position of robot
+        switcher = { 
+            "u" : (x-1) >= 1 and [(x-1), y] not in self.robots.values() \
+                and self.check_barriers(x-1, y, "d") and self.check_barriers(x, y, "u"),
+            "d" : (x+1) <= self.dimensions and [(x+1), y] not in self.robots.values()\
+                and self.check_barriers(x+1, y, "u") and self.check_barriers(x, y, "d"),
+            "l" : (y-1) >= 1 and [x, (y-1)] not in self.robots.values()\
+                and self.check_barriers(x, y-1, "r") and self.check_barriers(x, y, "l"),
+            "r" : (y+1) <= self.dimensions and [x, (y+1)] not in self.robots.values()\
+                and self.check_barriers(x, y+1, "l") and self.check_barriers(x, y, "r"),
+        }
+        return switcher[term]
+        
+    
     def check_boundaries(self) -> list:
         result = []
         for color in self.robots:
-            x, y = self.robots[color]  # position of robot
-
-            # board walls and robots
-            # barriers
-            u = (x-1) >= 1 and [(x-1), y] not in self.robots.values() \
-                and self.check_barriers(x-1, y, "d") and self.check_barriers(x, y, "u")
-            d = (x+1) <= self.dimensions and [(x+1), y] not in self.robots.values()\
-                and self.check_barriers(x+1, y, "u") and self.check_barriers(x, y, "d")
-            l = (y-1) >= 1 and [x, (y-1)] not in self.robots.values()\
-                and self.check_barriers(x, y-1, "r") and self.check_barriers(x, y, "l")
-            r = (y+1) <= self.dimensions and [x, (y+1)] not in self.robots.values()\
-                and self.check_barriers(x, y+1, "l") and self.check_barriers(x, y, "r")
-
-            # append result
-            if u:
+            if self.checkBounderiesRobot(color, "u"):
                 result.append((color, "u"))
-            if d:
+            if self.checkBounderiesRobot(color, "d"):
                 result.append((color, "d"))
-            if l:
+            if self.checkBounderiesRobot(color, "l"):
                 result.append((color, "l"))
-            if r:
+            if self.checkBounderiesRobot(color, "r"):
                 result.append((color, "r"))
-
         return result
 
+    def check_bounder(self, action: tuple) -> bool:
+        return self.checkBounderiesRobot(action[0], action[1])
+    
     def move(self, action: tuple):
         while(self.check_bounder(action)):
             if action[1] == 'l':
@@ -84,8 +88,6 @@ class Board:
                 self.robots[action[0]][0] += 1
         
 
-    def check_bounder(self, action: tuple) -> bool:
-        return action in self.check_boundaries()
 
     def check_if_objective(self, board):
         return self.objective[1] == board.robots[self.objective[0]][0] \
@@ -133,16 +135,13 @@ class RicochetRobots(Problem):
         das presentes na lista obtida pela execução de
         self.actions(state). """
        
-        if action in self.actions(state):
+        if state.board.checkBounderiesRobot(action[0], action[1]):
             board2 = Board(state.board.dimensions, deepcopy(state.board.robots), state.board.barriers_pos, state.board.objective)
             state2 = RRState(board2)
-            #print("Antes ", state.board)
-            #print("Antes ", state2.board)
             state2.board.move(action)
-            #print("Depois ", state.board)
-            #print("Depois ", state2.board)
             return state2
         return state
+
     def goal_test(self, state: RRState):
         """ Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se o alvo e o robô da
@@ -153,12 +152,15 @@ class RicochetRobots(Problem):
         """ Função heuristica utilizada para a procura A*. """
         objective = node.state.board.objective
         robot = node.state.board.robot_position(objective[0])
-        dx = abs(robot[0] - objective[1])  #TODO
+        dx = abs(robot[0] - objective[1])
         dy = abs(robot[1] - objective[2])
         return (dx + dy)
 
 
 if __name__ == "__main__":
+    
+    start_time = time.time()
+
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
     
@@ -168,4 +170,5 @@ if __name__ == "__main__":
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
+    print("--- %s seconds ---" % (time.time() - start_time))
 
