@@ -34,9 +34,6 @@ class Board:
         self.barriers_pos = barriers_pos
         self.objective = objective
 
-    def __repr__(self):
-        return str({"Robots":self.robots})
-
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
         return self.robots[robot]
@@ -47,22 +44,21 @@ class Board:
 
     def checkBounderiesRobot(self, robot: str, term: str):
         x, y = self.robots[robot]  # position of robot
-        switcher = { 
-            "u" : (x-1) >= 1 and [(x-1), y] not in self.robots.values() \
-                and self.check_barriers(x-1, y, "d") and self.check_barriers(x, y, "u"),
-            "d" : (x+1) <= self.dimensions and [(x+1), y] not in self.robots.values()\
-                and self.check_barriers(x+1, y, "u") and self.check_barriers(x, y, "d"),
-            "l" : (y-1) >= 1 and [x, (y-1)] not in self.robots.values()\
-                and self.check_barriers(x, y-1, "r") and self.check_barriers(x, y, "l"),
-            "r" : (y+1) <= self.dimensions and [x, (y+1)] not in self.robots.values()\
-                and self.check_barriers(x, y+1, "l") and self.check_barriers(x, y, "r"),
-        }
-        return switcher[term]
-        
-    
+
+        if term=="u":
+            return x!=1 and ([x-1,y] not in self.robots.values()) and self.check_barriers(x-1,y,"d") and self.check_barriers(x,y,"u")
+        elif term=="d":
+            return x!=self.dimensions and ([x+1,y] not in self.robots.values()) and self.check_barriers(x+1,y,"u") and self.check_barriers(x,y,"d")
+        elif term=="l":
+            return y!=1 and ([x,y-1] not in self.robots.values()) and self.check_barriers(x,y-1,"r") and self.check_barriers(x,y,"l")
+        elif term=="r":
+            return y!=self.dimensions and ([x,y+1] not in self.robots.values()) and self.check_barriers(x,y+1,"l") and self.check_barriers(x,y,"r")
+
+
+
     def check_boundaries(self) -> list:
         result = []
-        for color in self.robots:
+        for color in ("R", "G", "B", "Y"):
             if self.checkBounderiesRobot(color, "u"):
                 result.append((color, "u"))
             if self.checkBounderiesRobot(color, "d"):
@@ -73,26 +69,23 @@ class Board:
                 result.append((color, "r"))
         return result
 
-    def check_bounder(self, action: tuple) -> bool:
-        return self.checkBounderiesRobot(action[0], action[1])
-    
     def move(self, action: tuple):
-        while(self.check_bounder(action)):
+        while(self.checkBounderiesRobot(action[0], action[1])):
             if action[1] == 'l':
                 self.robots[action[0]][1] -= 1
-            if action[1] == 'r':
+            elif action[1] == 'r':
                 self.robots[action[0]][1] += 1
-            if action[1] == 'u':
+            elif action[1] == 'u':
                 self.robots[action[0]][0] -= 1
-            if action[1] == 'd':
+            elif action[1] == 'd':
                 self.robots[action[0]][0] += 1
-        
+
 
 
     def check_if_objective(self, board):
         return self.objective[1] == board.robots[self.objective[0]][0] \
             and self.objective[2] == board.robots[self.objective[0]][1]
-    
+
     # TODO: outros metodos da classe
 
 
@@ -134,7 +127,7 @@ class RicochetRobots(Problem):
         'state' passado como argumento. A ação retornada deve ser uma
         das presentes na lista obtida pela execução de
         self.actions(state). """
-       
+
         if state.board.checkBounderiesRobot(action[0], action[1]):
             board2 = Board(state.board.dimensions, deepcopy(state.board.robots), state.board.barriers_pos, state.board.objective)
             state2 = RRState(board2)
@@ -158,17 +151,16 @@ class RicochetRobots(Problem):
 
 
 if __name__ == "__main__":
-    
+
     start_time = time.time()
 
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-    
+
     #solution = astar_search(problem)
     solution = iterative_deepening_search(problem)
-    
+
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
     print("--- %s seconds ---" % (time.time() - start_time))
-
