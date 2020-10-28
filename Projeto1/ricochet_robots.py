@@ -7,10 +7,11 @@
 # 93743 Nelson Trindade
 
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
-    depth_first_tree_search, greedy_search, iterative_deepening_search
+    depth_first_tree_search, greedy_search, iterative_deepening_search, compare_searchers, compare_graph_searchers,\
+    InstrumentedProblem
 import sys
 from copy import deepcopy
-#import time
+import time
 
 class RRState:
     state_id = 0
@@ -149,19 +150,26 @@ class RicochetRobots(Problem):
         robot = node.state.board.robot_position(objective[0])
         dx = abs(robot[0] - objective[1])
         dy = abs(robot[1] - objective[2])
+        #if(dx == objective[1] or dy == objective[2]): return 1
         return (dx + dy)
 
 
 if __name__ == "__main__":
 
-    #start_time = time.time()
+    start_time = time.time()
 
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
+
     #solution = astar_search(problem)
     solution = iterative_deepening_search(problem)
+    #solution = breadth_first_tree_search(problem)
+    #solution = greedy_search(problem)
+    #solution = depth_first_tree_search(problem)
 
+  
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
-    #print("--- %s seconds ---" % (time.time() - start_time))
+
+    print("--- %s seconds ---" % (time.time() - start_time))
