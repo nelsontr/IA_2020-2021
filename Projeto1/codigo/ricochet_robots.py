@@ -7,11 +7,9 @@
 # 93743 Nelson Trindade
 
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
-    depth_first_tree_search, iterative_deepening_search
-
+    depth_first_tree_search, greedy_search, iterative_deepening_search
 import sys
 from copy import deepcopy
-
 
 class RRState:
     state_id = 0
@@ -95,9 +93,10 @@ class Board:
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
     uma instância da classe Board. """
+    robots = {}
+    barriers_pos = {}
     with open(filename, "r") as file1:
         dim = int(file1.readline()[:-1])
-        robots = {}
 
         for i in range(0, 4):
             aux = file1.readline()[:-1].split(" ")
@@ -107,7 +106,6 @@ def parse_instance(filename: str) -> Board:
         obj[1], obj[2] = int(obj[1]), int(obj[2])
 
         barriers = int(file1.readline()[:-1])
-        barriers_pos = {}
         for i in range(0, barriers):
             aux = file1.readline()[:-1].split(" ")
             if str([int(aux[0]), int(aux[1])]) not in barriers_pos:
@@ -146,15 +144,20 @@ class RicochetRobots(Problem):
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
-        pass
+        objective = node.state.board.objective
+        robot = node.state.board.robot_position(objective[0])
+        dx = abs(robot[0] - objective[1])
+        dy = abs(robot[1] - objective[2])
+        return (dx + dy)
 
 
 if __name__ == "__main__":
     board = parse_instance(sys.argv[1])
     problem = RicochetRobots(board)
-
+    
     solution = iterative_deepening_search(problem)
 
     print(len(solution.solution()))
     for i in solution.solution():
         print(i[0], i[1])
+    
