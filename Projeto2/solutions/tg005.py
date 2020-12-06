@@ -69,7 +69,7 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     features = list(map(list, zip(*D)))
     best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D, Y))
     #print(best_gain)
-    tree = [best_gain, -1,-1]
+    tree = [best_gain]
     
     for i in (0,1):
         new_Atributos = []
@@ -84,7 +84,7 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
                 new_sub_Y.append(Y[j])
                 
         sub_arvore = dtl(np.array(new_sub_D), np.array(new_sub_Y), new_Atributos, D, Y, noise)
-        tree[i+1] = sub_arvore
+        tree.append(sub_arvore)
     
     return tree
 
