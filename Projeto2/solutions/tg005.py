@@ -7,43 +7,44 @@ Student id #93743
 
 import numpy as np
 
-def calc_entropy(x,y):
-    return -1 * (x*np.log2(x) + y*np.log2(y)) if x != 0 and y != 0 else 0
+def calc_entropy(x):
+    return -1 * (x*np.log2(x) + (1-x)*np.log2(1-x)) if x not in [0,1] else 0
 
-def findMaxGain(D, Y, atributos):
-    maxGain = 0
-    value = -1
-    bestColumn = []
-    positives = [0,0] #positives on Y==0, Y==1
-    negatives = [0,0] #negatives on Y==0, Y==1
-    gain = 0
-    #print("len = ", len(D[0]))
-    for i in range(len(D[0])):
-        column = D[:,i]
-        for j in range(len(column)):
-            classification = Y[j]
-            #print("LLL", Y[j], column[j])
-            if column[j]:
-                positives[classification]+=1
-            else: 
-                negatives[classification]+=1
+def findMaxGain(a, D, Y):
+    posTrue, posFalse, negTrue, negFalse = 0, 0, 0, 0
+    
+    for ex in D:
+        if ex[a]==1:
+            if Y[a]:
+                posTrue += 1
+            else:
+                posFalse += 1
+        else:
+            if Y[a]:
+                negTrue += 1
+            else:
+                negFalse += 1
+    
+    positives = posTrue + posFalse
+    negatives = negTrue + negFalse
+    
+    if not positives:
+        posDivision = 0
+    else:
+        posDivision = posTrue/(positives)
+    
+    if not negatives:
+        negDivision = 0
+    else:
+        negDivision = negTrue/(negatives)
 
-        if positives[0] and positives[1]:
-            p = positives[0] + positives[1]
-            gain += (p/len(Y))*calc_entropy(positives[0]/p, positives[1]/p)
-            #print("inside 1: ", gain)
-        #print(negatives[0],negatives[1])
-        if negatives[0] and negatives[1]:
-            n = negatives[0] + negatives[1]
-            gain += (n/len(Y))*calc_entropy(negatives[0]/n, negatives[1]/n)
-            #print("inside 2: ", gain)
+    total = positives + negatives
+    #print(total, positives, negatives)
+    return calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision + (positives/total)*calc_entropy(posDivision)))
+    
 
-        bestColumn.append(gain)
-    #print(int(min(bestColumn)))
 
-    #print("po: ", positives[0], positives[1])
-    #print("ne: ", negatives[0], negatives[1])
-    return bestColumn, int(min(bestColumn))
+    
 
 def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     #1
@@ -65,31 +66,27 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
         return 1 if ones > zeros else 0 
     
     #4
-    chosenColumn, value = findMaxGain(D, Y, atributos)
-    #print(chosenColumn, value)
-    #chosenColumn = idx[0]
-
-    tree = [value, -1,-1]
-    #print(value)
+    features = list(map(list, zip(*D)))
+    best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D, Y))
+    #print(best_gain)
+    tree = [best_gain, -1,-1]
     
     for i in (0,1):
-        #print(type(i))
         new_Atributos = []
         for j in range(len(atributos)):
-            if j != value:
+            if j != best_gain:
                 new_Atributos.append(j)
+
         new_sub_D, new_sub_Y = [], []
         for j in range(len(Y)):
-            if D[j][value] == i:
+            if D[j][best_gain] == i:
                 new_sub_D.append(D[j]) 
                 new_sub_Y.append(Y[j])
-        #print("novo D", np.array(new_sub_D))
-        #print( np.array(new_sub_Y))
+                
         sub_arvore = dtl(np.array(new_sub_D), np.array(new_sub_Y), new_Atributos, D, Y, noise)
         tree[i+1] = sub_arvore
     
     return tree
-
 
 
 def createdecisiontree(D,Y, noise = False):
@@ -101,12 +98,39 @@ def createdecisiontree(D,Y, noise = False):
     #print(decisionTree)
     return decisionTree
 
-
+def classify(T,data):
+    
+    data = np.array(data)
+    out = []
+    for el in data:
+        #print("el",el,"out",out,"\nT",T)
+        wT = T
+        for ii in range(len(el)):
+            #print(T[0],el[T[0]],T)
+            if el[wT[0]]==0:
+                if not isinstance(wT[1], list):
+                    out += [wT[1]]
+                    break
+                else:
+                    wT = wT[1]
+            else:
+                if not isinstance(wT[2], list):
+                    out += [wT[2]]
+                    break
+                else:
+                    wT = wT[2]
+    return np.array(out)
+'''
 D2 = np.array([[0,0],
                [0,1],
                [1,0],
                [1,1]])
 
-Y = (np.array([0,0,0,1]))
-createdecisiontree(D2,Y, noise = False)
+Y = (np.array([1,1,1,0]))
+T = createdecisiontree(D2,Y)
+Yp = classify(T,D2)
+err = np.mean(np.abs(Yp-Y))
+print("tree > ", T, "\nprediction >", Yp,"\n correct >",Y,"\n errors >", err)
 
+print(T)
+'''
