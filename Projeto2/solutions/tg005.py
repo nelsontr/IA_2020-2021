@@ -11,12 +11,13 @@ def calc_entropy(x,y):
     return -1 * (x*np.log2(x) + y*np.log2(y)) if x != 0 and y != 0 else 0
 
 def findMaxGain(D, Y, atributos):
-    gain = 0
     maxGain = 0
     value = -1
     bestColumn = []
     positives = [0,0] #positives on Y==0, Y==1
     negatives = [0,0] #negatives on Y==0, Y==1
+    gain = 0
+    #print("len = ", len(D[0]))
     for i in range(len(D[0])):
         column = D[:,i]
         for j in range(len(column)):
@@ -27,7 +28,6 @@ def findMaxGain(D, Y, atributos):
             else: 
                 negatives[classification]+=1
 
-        gain = 0
         if positives[0] and positives[1]:
             p = positives[0] + positives[1]
             gain += (p/len(Y))*calc_entropy(positives[0]/p, positives[1]/p)
@@ -38,15 +38,12 @@ def findMaxGain(D, Y, atributos):
             gain += (n/len(Y))*calc_entropy(negatives[0]/n, negatives[1]/n)
             #print("inside 2: ", gain)
 
-    #print("gain = ", gain)
-        if (1 - gain) > maxGain:
-            maxGain = 1 - gain
-            bestColumn = column
-            value = i 
+        bestColumn.append(gain)
+    #print(int(min(bestColumn)))
 
     #print("po: ", positives[0], positives[1])
     #print("ne: ", negatives[0], negatives[1])
-    return bestColumn, value
+    return bestColumn, int(min(bestColumn))
 
 def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     #1
@@ -73,15 +70,15 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     #chosenColumn = idx[0]
 
     tree = [value, -1,-1]
-    new_sub_D, new_sub_Y = [], []
-        
+    #print(value)
+    
     for i in (0,1):
         #print(type(i))
         new_Atributos = []
         for j in range(len(atributos)):
             if j != value:
                 new_Atributos.append(j)
-
+        new_sub_D, new_sub_Y = [], []
         for j in range(len(Y)):
             if D[j][value] == i:
                 new_sub_D.append(D[j]) 
@@ -101,7 +98,7 @@ def createdecisiontree(D,Y, noise = False):
         atributos.append(i)
     
     decisionTree = dtl(D, Y, atributos, D, Y, noise)
-    print(decisionTree)
+    #print(decisionTree)
     return decisionTree
 
 
