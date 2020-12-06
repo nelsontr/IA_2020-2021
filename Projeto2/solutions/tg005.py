@@ -7,67 +7,95 @@ Student id #93743
 
 import numpy as np
 
-def entropy(x, y):
-    return (-(x) * np.log2(x) - y*np.log2(y))
+def calc_entropy(x,y):
+    return -1 * (x*np.log2(x) + y*np.log2(y)) if x != 0 and y != 0 else 0
 
-def findMaxGain(columns, lines, D, Y):
+def findMaxGain(D, Y, atributos):
+    gain = 0
     maxGain = 0
-    entropy = entropy(D, lines)
-    if not entropy:
-        return maxGain
-    
-    for i in range(columns):
-        zeros, uns, falses0, trues0, trues1, falses1 = 0
-        gain = 0
-        trues = 0
-        falses = 0
-        for j in range(lines):
-            if D[i][j]:
-                trues += 1
-            else:
-                falses += 1
-        
-        total = trues + falses
+    bestColumn = []
+    positives = [0,0] #positives on Y==0, Y==1
+    negatives = [0,0] #negatives on Y==0, Y==1
+    for i in range(len(D[0])):
+        column = D[:,i]
+        for j in range(len(column)):
+            classification = Y[j]
 
-        if not(x) and not(y):
-            gain += Y[0]/lines
+            if column[j]:
+                positives[classification]+=1
+            else: 
+                negatives[classification]+=1
+        
+        if positives[0] and positives[1]:
+            p = positives[0] + positives[1]
+            gain += (p/len(Y))*calc_entropy(positives[0]/p, positives[1]/p)
+        if negatives[0] and negatives[1]:
+            n = negatives[0] + negatives[1]
+            gain += (n/len(Y))*calc_entropy(negatives[0]/n, negatives[1]/n)
+        
+        if gain > maxGain:
+            maxGain = gain
+            bestColumn = column 
+
+    return bestColumn
+
+def dtl(D, Y, atributos, D_pai, Y_pai, noise):
+    #1
+    if not Y:
+        ones = np.count_nonzero(Y_pai == 1)
+        zeros = np.count_nonzero(Y_pai == 0)
+        return ones if ones > zeros else zeros
+    
+    #2
+    ones = np.count_nonzero(Y == 1)
+    zeros = np.count_nonzero(Y == 0)
+    if ones == len(Y) or zeros == len(Y):
+        if len(atributos) != len(D[0].size):
+            return 1 if ones > zeros else 0
+        else:
+            return [0,1,1] if ones > zeros else [0,0,0]
+    #3
+    if not atributos:
+        return ones if ones > zeros else zeros
+    
+    #4
+    chosenColumn = findMaxGain(D, Y, atributos)
+    #chosenColumn = idx[0]
+
+    tree = [chosenColumn, -1,-1]
+    new_sub_D, new_sub_Y = [], []
+        
+    for i in "01":
+        new_Atributos = []
+        for j in atributos:
+            if j != chosenColumn:
+                new_Atributos.append(j)
+
+        for j in range(len(Y)):
+            new_sub_D = new_sub_D.append(D[j]) if D[i][chosenColumn]==i else new_sub_D
+            new_sub_Y = new_sub_Y.append(Y[j]) if D[i][chosenColumn]==i else new_sub_Y
+
+        sub_arvore = dtl(new_sub_D, new_sub_Y, new_Atributos, D, Y, noise)
+        tree[i+1] = sub_arvore
+    
+    return tree
+
 
 
 def createdecisiontree(D,Y, noise = False):
-    zeros, uns, falses0, trues0 = []
-    maior = -1
-    total = len(D)
-
-
-    for i in range(total):
-        zeros, uns = 0,0
-        falses0, trues0, falses1, trues1 = 0,0,0,0
-        if not(D[i][0]):
-            zeros += 1
-            if not(Y[i]):
-                falses0 += 1
-            else:
-                trues0 +=1
-        else:
-            uns += 1
-            if not(Y[i]):
-                falses1 +=1            
-            else:
-                trues1 +=1
-        zeros[i].append(zeros)
-        uns[i].append(uns)
-        falses0[i].append(falses0)
-        trues0[i].append(trues0)
-
-        GI
-
-
-    GI(F0) = 1 - ((2/4) * I((2/2), (0/2)) + (2/4) * I(1/2, 1/2))
-    GI(F0) = 1 - ((zeros/total) * entropy(falses com 0/zeros, true com 0 / zeros) + (uns/total) * entropy(falses com 1/uns, true com 1/uns))
+    atributos = []
+    for i in range(len(D[0])):
+        atributos.append(i)
     
-    return [0,0,1]
+    decisionTree = dtl(D, Y, atributos, D, Y, noise)
+    return decisionTree
 
 
+D2 = np.array([[0,0],
+               [0,1],
+               [1,0],
+               [1,1]])
 
+Y = (np.array([0,0,0,1]))
+createdecisiontree(D2,Y, noise = False)
 
-def classify(T,data):
