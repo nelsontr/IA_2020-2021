@@ -17,12 +17,12 @@ def findMaxGain(a, D, Y):
     "Y[a] não existe para a=2 ->16"
     for ex in D:
         if ex[a]==1:
-            if Y[a]==1:
+            if D[-1]==1:
                 posTrue += 1
             else:
                 posFalse += 1
         else:
-            if Y[a]==1:
+            if D[-1]==1:
                 negTrue += 1
             else:
                 negFalse += 1
@@ -42,7 +42,7 @@ def findMaxGain(a, D, Y):
 
     total = positives + negatives
 
-    return calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision + (positives/total)*calc_entropy(posDivision)))
+    return calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision) + (positives/total)*calc_entropy(posDivision))
     
 
 def dtl(D, Y, atributos, D_pai, Y_pai, noise):
@@ -67,8 +67,11 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     
     #4
     features = list(map(list, zip(*D)))
+    D_list = D.tolist()
+    for i in range(len(Y)):
+        D_list[i].append(Y[i])
 
-    best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D, Y))
+    best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D_list, Y))
     tree = [best_gain,]
     
     for i in (0,1):
@@ -121,7 +124,7 @@ def classify(T,data):
                     wT = wT[2]
     return np.array(out)
 
-"""
+'''
 D3 = np.array([
               [0,0,0],
               [0,0,1],
@@ -138,4 +141,5 @@ Yp = classify(T,D3)
 err = np.mean(np.abs(Yp-Y))
 print("tree > ", T, "\nprediction >", Yp,"\n correct >",Y,"\n errors >", err)
 
-print(T)"""
+print(T)
+'''
