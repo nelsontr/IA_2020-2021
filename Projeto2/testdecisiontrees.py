@@ -8,6 +8,7 @@ Created on Wed Oct  7 10:45:40 2020
 """
 
 import numpy as np
+import time
 
 import datasetstreelearning
 
@@ -111,7 +112,8 @@ for file in files:
             points2 = 0
             pointsgen = 0
             for idataset in [0,1,2,3]:
-            #for idataset in []:
+                start_time = time.time()
+                #for idataset in []:
                 D,Y,Dt,Yt,nl,ol = datasetstreelearning.datasetnoise(idataset)        
                                     
                 print("dataset > ", idataset, "#points >", D.shape[0], "#feat >", D.shape[1])
@@ -134,6 +136,7 @@ for file in files:
                         points2 += 1
                         pointsgen += 1
                     print("  error training > ", errtrain, "length", lc, " error test > ", errtest, "/", ol, "\n", res )
+                    print("--- %s seconds ---" % (time.time() - start_time))
                 except:
                     print(R+"Test failed")            
             
