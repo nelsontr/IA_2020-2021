@@ -124,7 +124,6 @@ def classify(T,data):
                     wT = wT[2]
     return np.array(out)
 
-'''
 D3 = np.array([
               [0,0,0],
               [0,0,1],
@@ -142,4 +141,3 @@ err = np.mean(np.abs(Yp-Y))
 print("tree > ", T, "\nprediction >", Yp,"\n correct >",Y,"\n errors >", err)
 
 print(T)
-'''
