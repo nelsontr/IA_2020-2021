@@ -8,23 +8,25 @@ Student id #93743
 import numpy as np
 
 def calc_entropy(x):
-    return -1 * (x*np.log2(x) + (1-x)*np.log2(1-x)) if x not in [0,1] else 0
+    return -1 * (x*np.log2(x) + (1-x)*np.log2(1-x)) if x not in (0,1) else 0
 
 def findMaxGain(a, D, Y):
     posTrue, posFalse, negTrue, negFalse = 0, 0, 0, 0
-    
+    #print("D",D)
+    #print("F",Y)
+    "Y[a] não existe para a=2 ->16"
     for ex in D:
         if ex[a]==1:
-            if Y[a]:
+            if Y[a]==1:
                 posTrue += 1
             else:
                 posFalse += 1
         else:
-            if Y[a]:
+            if Y[a]==1:
                 negTrue += 1
             else:
                 negFalse += 1
-    
+
     positives = posTrue + posFalse
     negatives = negTrue + negFalse
     
@@ -39,11 +41,8 @@ def findMaxGain(a, D, Y):
         negDivision = negTrue/(negatives)
 
     total = positives + negatives
-    #print(total, positives, negatives)
+
     return calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision + (positives/total)*calc_entropy(posDivision)))
-    
-
-
     
 
 def dtl(D, Y, atributos, D_pai, Y_pai, noise):
@@ -61,15 +60,16 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
             return 1 if ones > zeros else 0
         else:
             return [0,1,1] if ones > zeros else [0,0,0]
+            
     #3
     if not atributos:
         return 1 if ones > zeros else 0 
     
     #4
     features = list(map(list, zip(*D)))
+
     best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D, Y))
-    #print(best_gain)
-    tree = [best_gain]
+    tree = [best_gain,]
     
     for i in (0,1):
         new_Atributos = []
@@ -120,17 +120,22 @@ def classify(T,data):
                 else:
                     wT = wT[2]
     return np.array(out)
-'''
-D2 = np.array([[0,0],
-               [0,1],
-               [1,0],
-               [1,1]])
 
-Y = (np.array([1,1,1,0]))
-T = createdecisiontree(D2,Y)
-Yp = classify(T,D2)
+"""
+D3 = np.array([
+              [0,0,0],
+              [0,0,1],
+              [0,1,0],
+              [0,1,1],
+              [1,0,0],
+              [1,0,1],
+              [1,1,0],
+              [1,1,1]])
+
+Y = np.array([0,1,0,1,1,1,1,1])
+T = createdecisiontree(D3,Y)
+Yp = classify(T,D3)
 err = np.mean(np.abs(Yp-Y))
 print("tree > ", T, "\nprediction >", Yp,"\n correct >",Y,"\n errors >", err)
 
-print(T)
-'''
+print(T)"""
