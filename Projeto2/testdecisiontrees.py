@@ -16,7 +16,7 @@ import os
 import imp
 import pickle
 
-origindir = ".\\solutions\\"
+origindir = "./solutions/"
 files = os.listdir(origindir)
             
         
@@ -104,7 +104,7 @@ for file in files:
                     #print("tree > ", T)
                 except:
                     print(R+"Test failed")
-            print("points", points, "/26", "short", pointsshort, "/2")
+            print("points", points, "/27", "short", pointsshort, "/2")
             
             # DATASETS WITH NOISE
             print("\n\n\t Testing robustness to noise\n\n")
@@ -147,9 +147,9 @@ for file in files:
             print(P+"\n\n\t Result\n\n"+W)
             print("tree no noise", points, "/26", "short", pointsshort, "/2")
             print("tree noise", points2, "/4", "good in test", pointsgen, "/4")
-            print("points",round(points/26*8,1),"+ reduced tree ", round(pointsshort/2*3,1), "+ noise", round(pointsgen/4*3,1))
-            C.append([file,round(points/26*8,1),round(pointsshort/2*3,1),round(pointsgen/4*3,1)])
-            print("\nExpected grade:\t", round(points/26*8,1)+round(pointsshort/2*3,1)+round(pointsgen/4*3,1),"(/14)+hidden tests (4pt)+report (2pt)")
+            print("points",round(points/27*8,1),"+ reduced tree ", round(pointsshort/2*3,1), "+ noise", round(pointsgen/4*3,1))
+            C.append([file,round(points/27*8,1),round(pointsshort/2*3,1),round(pointsgen/4*3,1)])
+            print("\nExpected grade:\t", round(points/27*8,1)+round(pointsshort/2*3,1)+round(pointsgen/4*3,1),"(/14)+hidden tests (4pt)+report (2pt)")
     except:
             print(R+"Error loading file, or running!")
             
