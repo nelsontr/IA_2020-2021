@@ -10,39 +10,38 @@ import numpy as np
 def calc_entropy(x):
     return -1 * (x*np.log2(x) + (1-x)*np.log2(1-x)) if x not in (0,1) else 0
 
-def findMaxGain(a, D, Y):
-    posTrue, posFalse, negTrue, negFalse = 0, 0, 0, 0
-    #print("D",D)
-    #print("F",Y)
-    "Y[a] não existe para a=2 ->16"
+def findMaxGain(a, D):
+    posTrue, posFalse, negTrue, negFalse, posDivision, negDivision = 0, 0, 0, 0, 0, 0
     for ex in D:
         if ex[a]==1:
-            if D[-1]==1:
+            if ex[-1]==1:
                 posTrue += 1
             else:
                 posFalse += 1
         else:
-            if D[-1]==1:
+            if ex[-1]==1:
                 negTrue += 1
             else:
                 negFalse += 1
 
     positives = posTrue + posFalse
     negatives = negTrue + negFalse
+    trues = posTrue + negTrue
+    falses = posFalse + negFalse
     
-    if not positives:
+    if positives == 0:
         posDivision = 0
     else:
         posDivision = posTrue/(positives)
     
-    if not negatives:
+    if negatives == 0:
         negDivision = 0
     else:
         negDivision = negTrue/(negatives)
 
     total = positives + negatives
-
-    return calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision) + (positives/total)*calc_entropy(posDivision))
+    result = calc_entropy(positives/total) - ((negatives/total)*calc_entropy(negDivision) + (positives/total)*calc_entropy(posDivision))
+    return result
     
 
 def dtl(D, Y, atributos, D_pai, Y_pai, noise):
@@ -70,8 +69,7 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     D_list = D.tolist()
     for i in range(len(Y)):
         D_list[i].append(Y[i])
-
-    best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D_list, Y))
+    best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D_list))
     tree = [best_gain,]
     
     for i in (0,1):
@@ -134,7 +132,7 @@ D3 = np.array([
               [1,1,0],
               [1,1,1]])
 
-Y = np.array([0,1,0,1,1,1,1,1])
+Y = np.array([0,1,0,1,0,1,0,1])
 T = createdecisiontree(D3,Y)
 Yp = classify(T,D3)
 err = np.mean(np.abs(Yp-Y))
