@@ -26,9 +26,7 @@ def findMaxGain(a, D):
 
     positives = posTrue + posFalse
     negatives = negTrue + negFalse
-    trues = posTrue + negTrue
-    falses = posFalse + negFalse
-    
+
     if positives == 0:
         posDivision = 0
     else:
@@ -69,6 +67,7 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
     D_list = D.tolist()
     for i in range(len(Y)):
         D_list[i].append(Y[i])
+    
     best_gain = max([i for i in range(len(features))], key = lambda a: findMaxGain(a, D_list))
     tree = [best_gain,]
     
@@ -86,6 +85,10 @@ def dtl(D, Y, atributos, D_pai, Y_pai, noise):
                 
         sub_arvore = dtl(np.array(new_sub_D), np.array(new_sub_Y), new_Atributos, D, Y, noise)
         tree.append(sub_arvore)
+
+        if len(tree)>2:
+            if tree[1] == tree[2]:
+                tree = tree[1]
     
     return tree
 
@@ -122,19 +125,18 @@ def classify(T,data):
                     wT = wT[2]
     return np.array(out)
 
-D3 = np.array([
-              [0,0,0],
-              [0,0,1],
-              [0,1,0],
-              [0,1,1],
-              [1,0,0],
-              [1,0,1],
-              [1,1,0],
-              [1,1,1]])
+D = np.array([[0, 0, 0],
+ [0, 0, 1],
+ [0, 1, 0],
+ [0, 1, 1],
+ [1, 0, 0],
+ [1, 0, 1],
+ [1, 1, 0],
+ [1, 1, 1]])
 
-Y = np.array([0,1,0,1,0,1,0,1])
-T = createdecisiontree(D3,Y)
-Yp = classify(T,D3)
+Y = np.array([0, 1, 1, 0, 0, 1, 1, 0])
+T = createdecisiontree(D,Y)
+Yp = classify(T,D)
 err = np.mean(np.abs(Yp-Y))
 print("tree > ", T, "\nprediction >", Yp,"\n correct >",Y,"\n errors >", err)
 
