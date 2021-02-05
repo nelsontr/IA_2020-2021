@@ -1,23 +1,20 @@
 # IA_2020_2021
+Artificial Intelligence 2020/2021
 
-### Projeto1
-- [Enunciado](Projeto1/Enunciado.pdf)
-- [Ficheiro do Projeto](Projeto1/codigo/ricochet_robots.py)
-- [RelatórioEntregue](Projeto1/Relatorio_P1_G05.pdf)
+### Project1
+- [Enunciado](Project1/Enunciado.pdf)
+- [Ficheiro do Project](Project1/codigo/ricochet_robots.py)
+- [Report](Project1/relatorio_P1_G05.pdf)
 
-**Nota:** 12,0 (Mooshak) + 4,0 (TestesPrivados) + 4,0 (Relatório)
-
-
+**Grade:** 12,0 (AutomaticTests) + 2,16 (PrivateTests) + 3,24 (Report) = 17,40
 
 ------
 
+### Project2
 
+- [Enunciado](Project2/Enunciado.pdf)
+- [Code](Project2\solutions\tg005.py)
+- [Report](Project2/relatorio_p2_g05.pdf)
 
-### Projeto2
-
-- [Enunciado](Projeto2/Enunciado.pdf)
-- [Ficheiro do Projeto](Projeto2\solutions\tg005.py)
-- [RelatórioEntregue]()
-
-**Nota:** 14,0 (Mooshak) + 4,0 (TestesPrivados) +2,0 (Relatório)
+**Grade:** 18,0 (TestesPrivados) + 1,67 (Relatório) = 19,67
 
