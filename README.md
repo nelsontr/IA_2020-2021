@@ -1,5 +1,5 @@
 # IA_2020_2021
-Artificial Intelligence 2020/2021
+Artificial Intelligence 2020/2021<br/>
 **Group:** @catasofia and @nelsontr
 
 ### Project1
