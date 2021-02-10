@@ -1,4 +1,4 @@
-# IA_2020_2021
+# IA_2020-2021
 Artificial Intelligence 2020/2021
 
 **Group:** @catasofia and @nelsontr
